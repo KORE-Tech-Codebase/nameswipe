@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+  <defs>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFF3ED"/>
+      <stop offset="100%" stop-color="#FFE0D0"/>
+    </linearGradient>
+    <linearGradient id="phoneGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#F5F5F5"/>
+    </linearGradient>
+    <filter id="shadow1" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#00000020"/>
+    </filter>
+    <filter id="shadow2" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#00000015"/>
+    </filter>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="150" cy="150" r="130" fill="#FFF8F4" opacity="0.6"/>
+  <circle cx="150" cy="150" r="100" fill="#FFF3ED" opacity="0.4"/>
+
+  <!-- Phone body -->
+  <rect x="95" y="55" width="110" height="190" rx="16" ry="16" fill="url(#phoneGrad)" stroke="#E0E0E0" stroke-width="1.5" filter="url(#shadow1)"/>
+  <!-- Phone notch -->
+  <rect x="130" y="60" width="40" height="5" rx="2.5" fill="#E0E0E0"/>
+  <!-- Phone screen area -->
+  <rect x="103" y="72" width="94" height="158" rx="4" fill="#FAFAFA"/>
+
+  <!-- Name card (center, slightly tilted) -->
+  <g transform="translate(150, 140)" filter="url(#shadow2)">
+    <rect x="-38" y="-45" width="76" height="90" rx="10" fill="url(#cardGrad)" stroke="#FF6B35" stroke-width="1.5"/>
+    <!-- Card heart -->
+    <g transform="translate(-8, -28) scale(0.7)">
+      <path d="M8 4C8 1.8 9.8 0 12 0s4 1.8 4 4c0 0 0 0 0 0C16 1.8 17.8 0 20 0s4 1.8 4 4c0 5.5-8 9.5-8 9.5S8 9.5 8 4z" fill="#FF4081"/>
+    </g>
+    <!-- Card text lines -->
+    <rect x="-22" y="-6" width="44" height="5" rx="2.5" fill="#FF6B35" opacity="0.7"/>
+    <rect x="-16" y="6" width="32" height="4" rx="2" fill="#FF6B35" opacity="0.35"/>
+    <rect x="-18" y="16" width="36" height="4" rx="2" fill="#FF6B35" opacity="0.2"/>
+    <!-- Card star rating -->
+    <g transform="translate(-14, 28) scale(0.45)">
+      <polygon points="8,0 10,5.5 16,5.5 11,9 13,15 8,11 3,15 5,9 0,5.5 6,5.5" fill="#FFB74D"/>
+      <polygon points="28,0 30,5.5 36,5.5 31,9 33,15 28,11 23,15 25,9 20,5.5 26,5.5" fill="#FFB74D"/>
+      <polygon points="48,0 50,5.5 56,5.5 51,9 53,15 48,11 43,15 45,9 40,5.5 46,5.5" fill="#FFB74D"/>
+      <polygon points="68,0 70,5.5 76,5.5 71,9 73,15 68,11 63,15 65,9 60,5.5 66,5.5" fill="#FFB74D" opacity="0.3"/>
+    </g>
+  </g>
+
+  <!-- Left swipe arrow (red/dislike) -->
+  <g transform="translate(42, 138)">
+    <circle cx="0" cy="0" r="22" fill="#FF4081" opacity="0.12"/>
+    <circle cx="0" cy="0" r="15" fill="#FF4081" opacity="0.25"/>
+    <!-- Arrow pointing left -->
+    <path d="M6 0 L-6 0 M-6 0 L-2 -4 M-6 0 L-2 4" stroke="#FF4081" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+  <!-- Left X icon -->
+  <g transform="translate(42, 170)">
+    <text x="0" y="0" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#FF4081" font-weight="600">Nope</text>
+  </g>
+
+  <!-- Right swipe arrow (green/like) -->
+  <g transform="translate(258, 138)">
+    <circle cx="0" cy="0" r="22" fill="#00BFA6" opacity="0.12"/>
+    <circle cx="0" cy="0" r="15" fill="#00BFA6" opacity="0.25"/>
+    <!-- Arrow pointing right -->
+    <path d="M-6 0 L6 0 M6 0 L2 -4 M6 0 L2 4" stroke="#00BFA6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+  <!-- Right heart icon -->
+  <g transform="translate(258, 170)">
+    <text x="0" y="0" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#00BFA6" font-weight="600">Love</text>
+  </g>
+
+  <!-- Curved swipe motion lines (left) -->
+  <path d="M110 130 Q80 125 55 138" stroke="#FF4081" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-dasharray="4 3" opacity="0.5"/>
+  <path d="M110 145 Q85 142 60 148" stroke="#FF4081" stroke-width="1" fill="none" stroke-linecap="round" stroke-dasharray="3 3" opacity="0.3"/>
+
+  <!-- Curved swipe motion lines (right) -->
+  <path d="M190 130 Q220 125 245 138" stroke="#00BFA6" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-dasharray="4 3" opacity="0.5"/>
+  <path d="M190 145 Q215 142 240 148" stroke="#00BFA6" stroke-width="1" fill="none" stroke-linecap="round" stroke-dasharray="3 3" opacity="0.3"/>
+
+  <!-- Decorative dots -->
+  <circle cx="45" cy="80" r="4" fill="#FF6B35" opacity="0.15"/>
+  <circle cx="255" cy="85" r="6" fill="#00BFA6" opacity="0.12"/>
+  <circle cx="60" cy="235" r="5" fill="#FF4081" opacity="0.1"/>
+  <circle cx="240" cy="230" r="3" fill="#FF6B35" opacity="0.15"/>
+  <circle cx="150" cy="265" r="4" fill="#00BFA6" opacity="0.1"/>
+</svg>
