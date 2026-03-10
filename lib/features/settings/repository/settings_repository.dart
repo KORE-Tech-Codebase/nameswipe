@@ -1,6 +1,6 @@
-import 'package:nameswipe/services/cache/cache_service.dart';
-import 'package:nameswipe/services/cache/cache_keys.dart';
-import 'package:nameswipe/services/cache/favorites_service.dart';
+import 'package:namora/services/cache/cache_service.dart';
+import 'package:namora/services/cache/cache_keys.dart';
+import 'package:namora/services/cache/favorites_service.dart';
 
 class SettingsRepository {
   SettingsRepository({required CacheService cache, required FavoritesService favorites})

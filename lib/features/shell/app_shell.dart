@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:nameswipe/features/swipe/view/swipe_screen.dart';
-import 'package:nameswipe/features/favorites/view/favorites_screen.dart';
-import 'package:nameswipe/features/search/view/search_screen.dart';
-import 'package:nameswipe/features/settings/view/settings_screen.dart';
-import 'package:nameswipe/widgets/floating_nav_bar.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:namora/features/swipe/view/swipe_screen.dart';
+import 'package:namora/features/favorites/view/favorites_screen.dart';
+import 'package:namora/features/search/view/search_screen.dart';
+import 'package:namora/features/settings/view/settings_screen.dart';
+import 'package:namora/features/search/viewmodel/search_viewmodel.dart';
+import 'package:namora/widgets/floating_nav_bar.dart';
 
-class AppShell extends StatefulWidget {
+class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key});
 
   @override
-  State<AppShell> createState() => _AppShellState();
+  ConsumerState<AppShell> createState() => _AppShellState();
 }
 
-class _AppShellState extends State<AppShell> {
+class _AppShellState extends ConsumerState<AppShell> {
   int _currentIndex = 0;
 
   final _screens = const [
@@ -21,6 +23,14 @@ class _AppShellState extends State<AppShell> {
     SearchScreen(),
     SettingsScreen(),
   ];
+
+  void _onTabChanged(int index) {
+    // Reset search state when leaving search tab
+    if (_currentIndex == 2 && index != 2) {
+      ref.read(searchViewModelProvider.notifier).resetSearch();
+    }
+    setState(() => _currentIndex = index);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +47,7 @@ class _AppShellState extends State<AppShell> {
             bottom: 0,
             child: FloatingNavBar(
               currentIndex: _currentIndex,
-              onTap: (index) => setState(() => _currentIndex = index),
+              onTap: _onTabChanged,
             ),
           ),
         ],

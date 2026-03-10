@@ -1,7 +1,7 @@
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import 'package:nameswipe/models/favorite_model.dart';
+import 'package:namora/models/favorite_model.dart';
 
 class PdfExportService {
   static Future<void> exportFavorites(List<FavoriteModel> favorites) async {
@@ -14,7 +14,7 @@ class PdfExportService {
         header: (context) => pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
-            pw.Text('NameSwipe - My Favorite Names',
+            pw.Text('Namora - My Favorite Names',
                 style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold)),
             pw.SizedBox(height: 4),
             pw.Text('${favorites.length} names',
@@ -42,6 +42,6 @@ class PdfExportService {
       ),
     );
 
-    await Printing.sharePdf(bytes: await pdf.save(), filename: 'nameswipe_favorites.pdf');
+    await Printing.sharePdf(bytes: await pdf.save(), filename: 'namora_favorites.pdf');
   }
 }

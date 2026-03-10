@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nameswipe/core/constants/colors.dart';
-import 'package:nameswipe/core/constants/spacing.dart';
-import 'package:nameswipe/core/theme/card_gradients.dart';
-import 'package:nameswipe/features/favorites/viewmodel/favorites_viewmodel.dart';
-import 'package:nameswipe/services/pdf/pdf_export_service.dart';
+import 'package:go_router/go_router.dart';
+import 'package:namora/core/constants/colors.dart';
+import 'package:namora/core/constants/spacing.dart';
+import 'package:namora/core/constants/app_constants.dart';
+import 'package:namora/core/routing/route_names.dart';
+import 'package:namora/core/theme/card_gradients.dart';
+import 'package:namora/features/favorites/viewmodel/favorites_viewmodel.dart';
+import 'package:namora/models/favorite_model.dart';
+import 'package:namora/features/swipe/viewmodel/swipe_viewmodel.dart';
+import 'package:namora/services/ads/ad_service.dart';
+import 'package:namora/services/pdf/pdf_export_service.dart';
 
 class FavoritesScreen extends ConsumerStatefulWidget {
   const FavoritesScreen({super.key});
@@ -27,11 +34,17 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
     ref.read(favoritesViewModelProvider.notifier).loadFavorites();
   }
 
+  void _removeFav(FavoriteModel fav) {
+    ref.read(favoritesViewModelProvider.notifier).removeFavorite(fav);
+  }
+
   @override
   Widget build(BuildContext context) {
     final favState = ref.watch(favoritesViewModelProvider);
     final genderFilter = ref.watch(favGenderFilterProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final stats = ref.watch(swipeStatsProvider);
 
     return SafeArea(
       child: Column(
@@ -66,65 +79,137 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
               ],
             ),
           ),
-          // Gender filter chips
+
+          // Stats + Compare quick action cards
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
             child: Row(
               children: [
-                _GenderChip(
-                    label: 'All', value: null, selected: genderFilter),
-                AppSpacing.gapW8,
-                _GenderChip(
-                    label: 'Boys', value: 'male', selected: genderFilter),
-                AppSpacing.gapW8,
-                _GenderChip(
-                    label: 'Girls', value: 'female', selected: genderFilter),
+                Expanded(
+                  child: _QuickActionCard(
+                    icon: Icons.analytics_rounded,
+                    label: 'Your Stats',
+                    value: '${stats.totalSwiped} swiped',
+                    gradient: [
+                      AppColors.secondary,
+                      AppColors.secondary.withValues(alpha: 0.7),
+                    ],
+                    onTap: () => context.push(RouteNames.statistics),
+                  ),
+                ),
+                AppSpacing.gapW12,
+                Expanded(
+                  child: _QuickActionCard(
+                    icon: Icons.compare_arrows_rounded,
+                    label: 'Compare',
+                    value: 'Side by side',
+                    gradient: const [
+                      Color(0xFF7C4DFF),
+                      Color(0xFFAA00FF),
+                    ],
+                    onTap: () => context.push(RouteNames.comparison),
+                  ),
+                ),
               ],
             ),
           ),
-          // List with 3 states
-          Expanded(
-            child: _buildBody(favState, isDark),
+
+          // Gender filter chips
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+            child: Row(
+              children: [
+                _GenderFilterChip(
+                  label: 'All',
+                  icon: Icons.all_inclusive_rounded,
+                  value: null,
+                  selected: genderFilter,
+                  color: primaryColor,
+                  isDark: isDark,
+                ),
+                AppSpacing.gapW8,
+                _GenderFilterChip(
+                  label: 'Boys',
+                  icon: Icons.male_rounded,
+                  value: 'male',
+                  selected: genderFilter,
+                  color: AppColors.genderMale,
+                  isDark: isDark,
+                ),
+                AppSpacing.gapW8,
+                _GenderFilterChip(
+                  label: 'Girls',
+                  icon: Icons.female_rounded,
+                  value: 'female',
+                  selected: genderFilter,
+                  color: AppColors.genderFemale,
+                  isDark: isDark,
+                ),
+                AppSpacing.gapW8,
+                _GenderFilterChip(
+                  label: 'Unisex',
+                  icon: Icons.transgender_rounded,
+                  value: 'unisex',
+                  selected: genderFilter,
+                  color: AppColors.genderUnisex,
+                  isDark: isDark,
+                ),
+              ],
+            ),
           ),
+
+          // Favorites count
+          if (favState.favorites.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 6, 20, 2),
+              child: Text(
+                '${favState.favorites.length} name${favState.favorites.length != 1 ? 's' : ''}',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: isDark
+                      ? AppColors.onSurfaceVariantDark
+                      : AppColors.onSurfaceVariant,
+                ),
+              ),
+            ),
+
+          // List
+          Expanded(
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: _buildBody(favState, isDark),
+            ),
+          ),
+          // Navbar spacing
+          AppSpacing.navBarSpacer,
         ],
       ),
     );
   }
 
   Widget _buildBody(FavoritesState favState, bool isDark) {
-    // Loading state
     if (favState.isLoading && favState.favorites.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(key: ValueKey('loading'), child: CircularProgressIndicator());
     }
 
-    // Empty state
     if (favState.favorites.isEmpty) {
       return _buildEmptyState(isDark);
     }
 
-    // Content state
     return RefreshIndicator(
+      key: const ValueKey('list'),
       onRefresh: _onRefresh,
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        itemCount: favState.favorites.length + 1,
-        separatorBuilder: (_, index) {
-          if (index == favState.favorites.length - 1) {
-            return const SizedBox.shrink();
-          }
-          return Divider(
-            height: 1,
-            color: isDark
-                ? AppColors.surfaceVariantDark
-                : AppColors.surfaceVariant,
-          );
-        },
+        itemCount: favState.favorites.length,
+        separatorBuilder: (_, _) => Divider(
+          height: 1,
+          color: isDark
+              ? AppColors.surfaceVariantDark
+              : AppColors.surfaceVariant,
+        ),
         itemBuilder: (context, index) {
-          // Bottom padding item
-          if (index == favState.favorites.length) {
-            return const SizedBox(height: 80);
-          }
-
           final fav = favState.favorites[index];
           final gradColors = CardGradients.colorsForCategory(fav.category);
 
@@ -137,13 +222,16 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
               color: AppColors.error,
               child: const Icon(Icons.delete, color: Colors.white),
             ),
+            confirmDismiss: (_) async {
+              HapticFeedback.mediumImpact();
+              return true;
+            },
             onDismissed: (_) {
-              ref
-                  .read(favoritesViewModelProvider.notifier)
-                  .removeFavorite(fav);
+              _removeFav(fav);
             },
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(vertical: 4),
+              onTap: () => context.push(RouteNames.nameDetail, extra: fav),
               leading: Container(
                 width: 44,
                 height: 44,
@@ -186,16 +274,15 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Category chip
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
                       color: gradColors[0].withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
-                      fav.category,
+                      AppConstants.categoryDisplayName(fav.category),
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
@@ -203,23 +290,16 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                       ),
                     ),
                   ),
-                  AppSpacing.gapW8,
-                  // Gender badge
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: AppColors.genderColor(fav.gender)
-                          .withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      fav.gender[0].toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.genderColor(fav.gender),
-                      ),
+                  AppSpacing.gapW4,
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      _removeFav(fav);
+                    },
+                    child: const Icon(
+                      Icons.favorite_rounded,
+                      size: 22,
+                      color: AppColors.favorite,
                     ),
                   ),
                 ],
@@ -233,6 +313,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
 
   Widget _buildEmptyState(bool isDark) {
     return Center(
+      key: const ValueKey('empty'),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
@@ -261,15 +342,6 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                         : AppColors.onSurfaceVariant,
                   ),
               textAlign: TextAlign.center,
-            ),
-            AppSpacing.gapH24,
-            FilledButton.icon(
-              onPressed: () {
-                // Navigate to swipe tab (index 0)
-                DefaultTabController.of(context).animateTo(0);
-              },
-              icon: const Icon(Icons.explore_rounded),
-              label: const Text('Explore Names'),
             ),
           ],
         ),
@@ -323,33 +395,167 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
   }
 
   Future<void> _exportPdf(BuildContext context) async {
+    // Show rewarded ad before allowing PDF export
+    final rewarded = await AdService.instance.showRewardedAd();
+    if (!rewarded) return;
+
+    if (!context.mounted) return;
     final favState = ref.read(favoritesViewModelProvider);
     await PdfExportService.exportFavorites(favState.favorites);
   }
 }
 
-class _GenderChip extends ConsumerWidget {
+// Quick action card for Stats / Compare
+class _QuickActionCard extends StatelessWidget {
+  final IconData icon;
   final String label;
-  final String? value;
-  final String? selected;
+  final String value;
+  final List<Color> gradient;
+  final VoidCallback onTap;
 
-  const _GenderChip({
+  const _QuickActionCard({
+    required this.icon,
     required this.label,
     required this.value,
+    required this.gradient,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: gradient,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: gradient[0].withValues(alpha: 0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.white, size: 28),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: Colors.white.withValues(alpha: 0.7),
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Enhanced gender filter chip
+class _GenderFilterChip extends ConsumerWidget {
+  final String label;
+  final IconData icon;
+  final String? value;
+  final String? selected;
+  final Color color;
+  final bool isDark;
+
+  const _GenderFilterChip({
+    required this.label,
+    required this.icon,
+    required this.value,
     required this.selected,
+    required this.color,
+    required this.isDark,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isSelected = selected == value;
-    return ChoiceChip(
-      label: Text(label),
-      selected: isSelected,
-      onSelected: (_) {
-        ref.read(favGenderFilterProvider.notifier).state =
-            isSelected ? null : value;
-        ref.read(favoritesViewModelProvider.notifier).loadFavorites();
-      },
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          ref.read(favGenderFilterProvider.notifier).state =
+              isSelected ? null : value;
+          ref.read(favoritesViewModelProvider.notifier).loadFavorites();
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? color.withValues(alpha: 0.15)
+                : (isDark
+                    ? AppColors.surfaceVariantDark
+                    : AppColors.surfaceVariant),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isSelected
+                  ? color.withValues(alpha: 0.5)
+                  : Colors.transparent,
+              width: 1.5,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: 18,
+                color: isSelected
+                    ? color
+                    : (isDark
+                        ? AppColors.onSurfaceVariantDark
+                        : AppColors.onSurfaceVariant),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                  color: isSelected
+                      ? color
+                      : (isDark
+                          ? AppColors.onSurfaceVariantDark
+                          : AppColors.onSurfaceVariant),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

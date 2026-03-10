@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nameswipe/core/constants/colors.dart';
-import 'package:nameswipe/core/routing/route_names.dart';
-import 'package:nameswipe/services/cache/cache_keys.dart';
-import 'package:nameswipe/services/cache/cache_service.dart';
+import 'package:namora/core/constants/colors.dart';
+import 'package:namora/core/routing/route_names.dart';
+import 'package:namora/services/cache/cache_keys.dart';
+import 'package:namora/services/cache/cache_service.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});

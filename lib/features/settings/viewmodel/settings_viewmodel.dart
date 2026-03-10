@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nameswipe/features/settings/repository/settings_repository.dart';
-import 'package:nameswipe/providers/app_providers.dart';
+import 'package:namora/features/settings/repository/settings_repository.dart';
+import 'package:namora/providers/app_providers.dart';
 
 final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
   return SettingsRepository(

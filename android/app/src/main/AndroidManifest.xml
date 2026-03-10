@@ -2,14 +2,14 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:label="NameSwipe"
+        android:label="Namora"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
-        <!-- TODO: Uncomment when ready to enable ads -->
-        <!-- <meta-data
+        <!-- TODO: Replace with real AdMob APPLICATION_ID before publishing -->
+        <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/> -->
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
 
         <activity
             android:name=".MainActivity"

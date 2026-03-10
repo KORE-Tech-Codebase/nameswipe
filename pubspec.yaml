@@ -1,5 +1,5 @@
-name: nameswipe
-description: "NameSwipe - Swipe to find the perfect baby name"
+name: namora
+description: "Namora - Baby Name Finder"
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -30,6 +30,7 @@ dependencies:
   flutter_svg: ^2.0.16
   flutter_card_swiper: ^7.0.1
   cupertino_icons: ^1.0.8
+  flutter_markdown_plus: ^1.0.2
 
   # PDF
   pdf: ^3.11.1
@@ -38,8 +39,13 @@ dependencies:
   # Sharing
   share_plus: ^10.1.3
 
-  # Ads (uncomment when ready to enable ads)
-  # google_mobile_ads: ^5.3.0
+  # Rating
+  in_app_review: ^2.0.10
+
+  # Ads
+  google_mobile_ads: ^5.3.0
+  gma_mediation_unity: ^1.2.0
+  gma_mediation_meta: ^1.1.0
 
   # Utils
   intl: ^0.19.0
@@ -63,12 +69,21 @@ dev_dependencies:
   flutter_native_splash: ^2.4.3
   flutter_launcher_icons: ^0.14.3
 
+# Launcher Icons Configuration
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon/app_icon.png"
+  adaptive_icon_background: "#FF6B35"
+  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
+
 flutter:
   uses-material-design: true
 
   assets:
     - assets/svg/
     - assets/data/
+    - assets/icon/
 
   fonts:
     - family: Nunito

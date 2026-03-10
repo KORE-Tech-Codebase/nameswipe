@@ -1,16 +1,19 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nameswipe/models/name_model.dart';
-import 'package:nameswipe/models/favorite_model.dart';
-import 'package:nameswipe/models/filter_model.dart';
-import 'package:nameswipe/features/swipe/repository/swipe_repository.dart';
-import 'package:nameswipe/providers/app_providers.dart';
+import 'package:namora/models/name_model.dart';
+import 'package:namora/models/favorite_model.dart';
+import 'package:namora/models/filter_model.dart';
+import 'package:namora/features/swipe/repository/swipe_repository.dart';
+import 'package:namora/providers/app_providers.dart';
+import 'package:namora/services/ads/ad_service.dart';
+import 'package:namora/services/cache/favorites_service.dart';
 
 final swipeRepositoryProvider = Provider<SwipeRepository>((ref) {
   return SwipeRepository(api: ref.watch(apiServiceProvider));
 });
 
 final swipeFilterProvider = StateProvider<FilterModel>((ref) {
-  return const FilterModel();
+  return FilterModel.allCategories();
 });
 
 final swipeViewModelProvider =
@@ -21,6 +24,41 @@ final swipeViewModelProvider =
     ref,
   );
 });
+
+// Tracks total swipe stats for the session
+final swipeStatsProvider = StateProvider<SwipeStats>((ref) => const SwipeStats());
+
+class SwipeStats {
+  final int totalSwiped;
+  final int totalFavorited;
+  final int totalSkipped;
+  final Map<String, int> categoryBreakdown;
+  final Map<String, int> genderBreakdown;
+
+  const SwipeStats({
+    this.totalSwiped = 0,
+    this.totalFavorited = 0,
+    this.totalSkipped = 0,
+    this.categoryBreakdown = const {},
+    this.genderBreakdown = const {},
+  });
+
+  SwipeStats recordSwipe(NameModel name, bool isFavorite) {
+    final newCatBreakdown = Map<String, int>.from(categoryBreakdown);
+    newCatBreakdown[name.category] = (newCatBreakdown[name.category] ?? 0) + 1;
+
+    final newGenderBreakdown = Map<String, int>.from(genderBreakdown);
+    newGenderBreakdown[name.gender] = (newGenderBreakdown[name.gender] ?? 0) + 1;
+
+    return SwipeStats(
+      totalSwiped: totalSwiped + 1,
+      totalFavorited: isFavorite ? totalFavorited + 1 : totalFavorited,
+      totalSkipped: isFavorite ? totalSkipped : totalSkipped + 1,
+      categoryBreakdown: newCatBreakdown,
+      genderBreakdown: newGenderBreakdown,
+    );
+  }
+}
 
 class SwipeState {
   final List<NameModel> names;
@@ -53,7 +91,7 @@ class SwipeViewModel extends StateNotifier<SwipeState> {
   }
 
   final SwipeRepository _repository;
-  final dynamic _favoritesService;
+  final FavoritesService _favoritesService;
   final Ref _ref;
 
   Future<void> loadNames() async {
@@ -68,15 +106,28 @@ class SwipeViewModel extends StateNotifier<SwipeState> {
     }
   }
 
+  /// Called by CardSwiper's onSwipe callback.
+  /// Does NOT remove from list - lets CardSwiper handle card progression.
   Future<void> onSwipe(int index, bool isFavorite) async {
     if (index >= state.names.length) return;
     final name = state.names[index];
 
+    // Haptic feedback
+    HapticFeedback.lightImpact();
+
     // Mark as seen in session
     _repository.markSeen(name);
 
+    // Record stats
+    _ref.read(swipeStatsProvider.notifier).state =
+        _ref.read(swipeStatsProvider).recordSwipe(name, isFavorite);
+
+    // Track swipe for interstitial ad
+    AdService.instance.recordSwipe();
+
     // Save to Hive if favorited
     if (isFavorite) {
+      HapticFeedback.mediumImpact();
       _favoritesService.addFavorite(FavoriteModel(
         name: name.name,
         gender: name.gender,
@@ -88,24 +139,11 @@ class SwipeViewModel extends StateNotifier<SwipeState> {
       // Trigger favorites refresh
       _ref.read(favoritesRefreshProvider.notifier).state++;
     }
-
-    final remaining = List<NameModel>.from(state.names)..removeAt(index);
-    state = state.copyWith(names: remaining);
-
-    // Preload more names when running low
-    if (remaining.length <= 5) {
-      _preloadMore();
-    }
   }
 
-  Future<void> _preloadMore() async {
-    try {
-      final filter = _ref.read(swipeFilterProvider);
-      final more = await _repository.getNextBatch(filter: filter);
-      final current = List<NameModel>.from(state.names);
-      current.addAll(more);
-      state = state.copyWith(names: current);
-    } catch (_) {}
+  /// Called when CardSwiper reaches the end of the deck
+  void onDeckEnd() {
+    loadNames();
   }
 
   void applyFilter(FilterModel filter) {

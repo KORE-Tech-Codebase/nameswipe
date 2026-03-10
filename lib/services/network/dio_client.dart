@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:nameswipe/core/constants/app_constants.dart';
-import 'package:nameswipe/utils/logger/app_logger.dart';
+import 'package:namora/core/constants/app_constants.dart';
+import 'package:namora/utils/logger/app_logger.dart';
 
 class DioClient {
   DioClient() : _dio = Dio(_baseOptions) {

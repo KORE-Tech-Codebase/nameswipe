@@ -18,11 +18,11 @@ class TermsConditionsScreen extends StatelessWidget {
             SizedBox(height: 24),
             Text('Acceptance of Terms', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
             SizedBox(height: 8),
-            Text('By downloading and using NameSwipe, you agree to these terms and conditions.'),
+            Text('By downloading and using Namora, you agree to these terms and conditions.'),
             SizedBox(height: 16),
             Text('Use of the App', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
             SizedBox(height: 8),
-            Text('NameSwipe is a baby name discovery app. The names and meanings provided are for '
+            Text('Namora is a baby name discovery app. The names and meanings provided are for '
                 'informational purposes only. We strive for accuracy but cannot guarantee that all '
                 'name meanings and origins are 100% accurate.'),
             SizedBox(height: 16),

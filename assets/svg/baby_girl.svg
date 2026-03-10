@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <!-- Baby girl silhouette - simple, modern, minimal -->
+  <g opacity="0.12" fill="white">
+    <!-- Head -->
+    <circle cx="60" cy="35" r="20"/>
+    <!-- Hair left -->
+    <ellipse cx="42" cy="30" rx="8" ry="18" transform="rotate(10, 42, 30)"/>
+    <!-- Hair right -->
+    <ellipse cx="78" cy="30" rx="8" ry="18" transform="rotate(-10, 78, 30)"/>
+    <!-- Hair top puff -->
+    <ellipse cx="60" cy="18" rx="18" ry="8"/>
+    <!-- Body (dress shape) -->
+    <path d="M42 55 Q42 50 60 50 Q78 50 78 55 L82 95 Q82 100 60 100 Q38 100 38 95 Z"/>
+    <!-- Left arm -->
+    <ellipse cx="38" cy="62" rx="5" ry="12" transform="rotate(-12, 38, 62)"/>
+    <!-- Right arm -->
+    <ellipse cx="82" cy="62" rx="5" ry="12" transform="rotate(12, 82, 62)"/>
+    <!-- Small bow -->
+    <ellipse cx="72" cy="20" rx="5" ry="3" transform="rotate(-20, 72, 20)"/>
+    <ellipse cx="78" cy="22" rx="5" ry="3" transform="rotate(20, 78, 22)"/>
+    <circle cx="75" cy="21" r="2"/>
+  </g>
+</svg>

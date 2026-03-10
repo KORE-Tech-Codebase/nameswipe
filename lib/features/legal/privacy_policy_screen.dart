@@ -1,57 +1,124 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:namora/core/constants/colors.dart';
 
-class PrivacyPolicyScreen extends StatelessWidget {
+class PrivacyPolicyScreen extends StatefulWidget {
   const PrivacyPolicyScreen({super.key});
 
   @override
+  State<PrivacyPolicyScreen> createState() => _PrivacyPolicyScreenState();
+}
+
+class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
+  String? _markdown;
+  bool _isLoading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchPolicy();
+  }
+
+  Future<void> _fetchPolicy() async {
+    try {
+      final response = await Dio().get(
+        'https://comm-app-data-api.vercel.app/api/v1/privacy-policy/namora',
+      );
+      if (mounted) {
+        setState(() {
+          _markdown = response.data is String
+              ? response.data as String
+              : response.data['content'] as String? ?? response.data.toString();
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = 'Failed to load privacy policy. Please try again.';
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Privacy Policy')),
-      body: const SingleChildScrollView(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Privacy Policy', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            Text('Last updated: February 2026', style: TextStyle(color: Colors.grey)),
-            SizedBox(height: 24),
-            Text('Information We Collect', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-            SizedBox(height: 8),
-            Text('NameSwipe is designed with your privacy in mind. We do not collect personal information. '
-                'All your favorites and swipe history are stored locally on your device.'),
-            SizedBox(height: 16),
-            Text('Data Storage', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-            SizedBox(height: 8),
-            Text('All data is stored locally on your device using SQLite database. '
-                'We do not transmit your personal data to any external servers. '
-                'The app connects to our API solely to download baby name data.'),
-            SizedBox(height: 16),
-            Text('Advertising', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-            SizedBox(height: 8),
-            Text('This app may display advertisements provided by Google AdMob. '
-                'AdMob may collect certain device information to serve relevant ads. '
-                'Please refer to Google\'s privacy policy for more details.'),
-            SizedBox(height: 16),
-            Text('Third-Party Services', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-            SizedBox(height: 8),
-            Text('The app uses the following third-party services:\n'
-                '- Google AdMob (advertising)\n'
-                '- Names API (baby name data)\n\n'
-                'Each of these services has their own privacy policy.'),
-            SizedBox(height: 16),
-            Text('Changes to This Policy', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-            SizedBox(height: 8),
-            Text('We may update this privacy policy from time to time. '
-                'Any changes will be reflected in the app.'),
-            SizedBox(height: 16),
-            Text('Contact Us', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-            SizedBox(height: 8),
-            Text('If you have questions about this privacy policy, please contact us through the app store listing.'),
-            SizedBox(height: 32),
-          ],
-        ),
-      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _error != null
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.error_outline_rounded,
+                          size: 48,
+                          color: isDark
+                              ? AppColors.onSurfaceVariantDark
+                              : AppColors.onSurfaceVariant,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          _error!,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: isDark
+                                ? AppColors.onSurfaceVariantDark
+                                : AppColors.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        FilledButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              _isLoading = true;
+                              _error = null;
+                            });
+                            _fetchPolicy();
+                          },
+                          icon: const Icon(Icons.refresh_rounded),
+                          label: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : Markdown(
+                  data: _markdown ?? '',
+                  padding: const EdgeInsets.all(20),
+                  styleSheet: MarkdownStyleSheet(
+                    h1: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                    h2: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                    h3: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                    p: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          height: 1.6,
+                          color: isDark
+                              ? AppColors.onSurfaceDark
+                              : AppColors.onSurface,
+                        ),
+                    listBullet: TextStyle(
+                      color: isDark
+                          ? AppColors.onSurfaceDark
+                          : AppColors.onSurface,
+                    ),
+                    blockSpacing: 12,
+                  ),
+                ),
     );
   }
 }

@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.nameswipe.app"
+    namespace = "com.namora.rkx"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -20,7 +20,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.nameswipe.app"
+        applicationId = "com.namora.rkx"
         minSdk = 21
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

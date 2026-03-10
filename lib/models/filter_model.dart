@@ -1,3 +1,5 @@
+import 'package:namora/core/constants/app_constants.dart';
+
 class FilterModel {
   final Set<String> categories;
   final String? gender; // null = all, 'male', 'female', 'unisex'
@@ -9,11 +11,24 @@ class FilterModel {
     this.origins = const {},
   });
 
+  /// Default filter with all categories selected
+  factory FilterModel.allCategories() {
+    return FilterModel(
+      categories: Set<String>.from(AppConstants.categories),
+    );
+  }
+
   bool get hasActiveFilters =>
-      categories.isNotEmpty || gender != null || origins.isNotEmpty;
+      gender != null ||
+      origins.isNotEmpty ||
+      (categories.isNotEmpty &&
+          categories.length != AppConstants.categories.length);
 
   int get activeFilterCount =>
-      (categories.isNotEmpty ? 1 : 0) +
+      ((categories.isNotEmpty &&
+                  categories.length != AppConstants.categories.length)
+              ? 1
+              : 0) +
       (gender != null ? 1 : 0) +
       (origins.isNotEmpty ? 1 : 0);
 
@@ -30,6 +45,6 @@ class FilterModel {
   }
 
   FilterModel clearAll() {
-    return const FilterModel();
+    return FilterModel.allCategories();
   }
 }

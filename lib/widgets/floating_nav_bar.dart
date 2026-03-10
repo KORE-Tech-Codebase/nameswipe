@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:nameswipe/core/constants/colors.dart';
-import 'package:nameswipe/core/constants/spacing.dart';
+import 'package:namora/core/constants/colors.dart';
+import 'package:namora/core/constants/spacing.dart';
 
 class FloatingNavBar extends StatelessWidget {
   final int currentIndex;
@@ -27,7 +27,7 @@ class FloatingNavBar extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.fromLTRB(AppSpacing.xxl, 0, AppSpacing.xxl, AppSpacing.lg),
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
       decoration: BoxDecoration(
         color: isDark ? AppColors.surfaceDark : Colors.white,
         borderRadius: BorderRadius.circular(30),
@@ -57,11 +57,11 @@ class FloatingNavBar extends StatelessWidget {
               },
               behavior: HitTestBehavior.opaque,
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut,
-                padding: const EdgeInsets.symmetric(
-                  vertical: AppSpacing.sm,
-                  horizontal: AppSpacing.xs,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+                padding: EdgeInsets.symmetric(
+                  vertical: isActive ? 8 : 12,
+                  horizontal: 4,
                 ),
                 decoration: BoxDecoration(
                   color: isActive
@@ -71,34 +71,39 @@ class FloatingNavBar extends StatelessWidget {
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      isActive ? item.activeIcon : item.icon,
-                      color: isActive
-                          ? primaryColor
-                          : isDark
-                              ? AppColors.onSurfaceVariantDark
-                              : AppColors.onSurfaceVariant,
-                      size: 24,
-                    ),
-                    const SizedBox(height: 2),
-                    AnimatedOpacity(
-                      duration: const Duration(milliseconds: 200),
-                      opacity: isActive ? 1.0 : 0.0,
-                      child: AnimatedSize(
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.easeInOut,
-                        child: Text(
-                          isActive ? item.label : '',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                            color: primaryColor,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
+                      child: Icon(
+                        isActive ? item.activeIcon : item.icon,
+                        key: ValueKey(isActive),
+                        color: isActive
+                            ? primaryColor
+                            : isDark
+                                ? AppColors.onSurfaceVariantDark
+                                : AppColors.onSurfaceVariant,
+                        size: 24,
                       ),
+                    ),
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOutCubic,
+                      child: isActive
+                          ? Padding(
+                              padding: const EdgeInsets.only(top: 3),
+                              child: Text(
+                                item.label,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  color: primaryColor,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            )
+                          : const SizedBox.shrink(),
                     ),
                   ],
                 ),

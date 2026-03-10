@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nameswipe/core/constants/app_constants.dart';
-import 'package:nameswipe/core/routing/app_router.dart';
-import 'package:nameswipe/core/theme/app_theme.dart';
-import 'package:nameswipe/providers/app_providers.dart';
+import 'package:namora/core/constants/app_constants.dart';
+import 'package:namora/core/routing/app_router.dart';
+import 'package:namora/core/theme/app_theme.dart';
+import 'package:namora/providers/app_providers.dart';
 
 class App extends ConsumerWidget {
   const App({super.key});

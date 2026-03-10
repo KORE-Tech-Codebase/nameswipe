@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:nameswipe/models/name_model.dart';
-import 'package:nameswipe/models/category_model.dart';
-import 'package:nameswipe/services/network/dio_client.dart';
-import 'package:nameswipe/utils/logger/app_logger.dart';
+import 'package:namora/models/name_model.dart';
+import 'package:namora/models/category_model.dart';
+import 'package:namora/services/network/dio_client.dart';
+import 'package:namora/utils/logger/app_logger.dart';
 
 class NamesApiService {
   NamesApiService({required DioClient dioClient}) : _dioClient = dioClient;

@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/services.dart';
-import 'package:nameswipe/core/constants/app_constants.dart';
-import 'package:nameswipe/models/name_model.dart';
-import 'package:nameswipe/models/filter_model.dart';
-import 'package:nameswipe/services/network/api_service.dart';
-import 'package:nameswipe/utils/logger/app_logger.dart';
+import 'package:namora/core/constants/app_constants.dart';
+import 'package:namora/models/name_model.dart';
+import 'package:namora/models/filter_model.dart';
+import 'package:namora/services/network/api_service.dart';
+import 'package:namora/utils/logger/app_logger.dart';
 
 class SwipeRepository {
   SwipeRepository({required NamesApiService api}) : _api = api;

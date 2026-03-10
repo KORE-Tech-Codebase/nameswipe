@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:nameswipe/core/constants/colors.dart';
-import 'package:nameswipe/core/constants/typography.dart';
+import 'package:namora/core/constants/colors.dart';
+import 'package:namora/core/constants/spacing.dart';
+import 'package:namora/core/constants/typography.dart';
 
 abstract final class AppTheme {
   static ThemeData get light => ThemeData(
@@ -121,6 +122,7 @@ abstract final class AppTheme {
         color: Colors.white,
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      insetPadding: const EdgeInsets.fromLTRB(16, 0, 16, AppSpacing.navBarClearance),
     ),
     dialogTheme: DialogThemeData(
       backgroundColor: AppColors.surface,
@@ -252,6 +254,7 @@ abstract final class AppTheme {
         color: Colors.black,
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      insetPadding: const EdgeInsets.fromLTRB(16, 0, 16, AppSpacing.navBarClearance),
     ),
     dialogTheme: DialogThemeData(
       backgroundColor: AppColors.surfaceDark,

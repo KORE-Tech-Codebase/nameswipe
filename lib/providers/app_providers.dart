@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nameswipe/services/cache/cache_keys.dart';
-import 'package:nameswipe/services/cache/cache_service.dart';
-import 'package:nameswipe/services/cache/favorites_service.dart';
-import 'package:nameswipe/services/network/dio_client.dart';
-import 'package:nameswipe/services/network/api_service.dart';
+import 'package:namora/services/cache/cache_keys.dart';
+import 'package:namora/services/cache/cache_service.dart';
+import 'package:namora/services/cache/favorites_service.dart';
+import 'package:namora/services/network/dio_client.dart';
+import 'package:namora/services/network/api_service.dart';
 
 // Service Providers
 final dioClientProvider = Provider<DioClient>((ref) => DioClient());

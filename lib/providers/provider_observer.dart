@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nameswipe/utils/logger/app_logger.dart';
+import 'package:namora/utils/logger/app_logger.dart';
 
 class AppProviderObserver extends ProviderObserver {
   @override

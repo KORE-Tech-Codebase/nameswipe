@@ -1,5 +1,5 @@
-import 'package:nameswipe/models/favorite_model.dart';
-import 'package:nameswipe/services/cache/favorites_service.dart';
+import 'package:namora/models/favorite_model.dart';
+import 'package:namora/services/cache/favorites_service.dart';
 
 class FavoritesRepository {
   FavoritesRepository({required FavoritesService favoritesService})
@@ -42,6 +42,10 @@ class FavoritesRepository {
 
   Future<void> addFavorite(FavoriteModel fav) async {
     await _favService.addFavorite(fav);
+  }
+
+  Future<void> clearAll() async {
+    await _favService.clearAll();
   }
 
   int get count => _favService.count;

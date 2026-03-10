@@ -37,6 +37,10 @@ abstract final class AppSpacing {
   static const SizedBox gapW24 = SizedBox(width: xxl);
   static const SizedBox gapW32 = SizedBox(width: xxxl);
 
+  // Bottom nav bar clearance (nav bar height + margin)
+  static const double navBarClearance = 90.0;
+  static const SizedBox navBarSpacer = SizedBox(height: navBarClearance);
+
   // Screen padding
   static const EdgeInsets screenPadding = EdgeInsets.all(lg);
   static const EdgeInsets screenPaddingHorizontal =

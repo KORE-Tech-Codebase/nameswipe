@@ -19,9 +19,9 @@ abstract final class AppConstants {
   static const Duration searchDebounceDelay = Duration(milliseconds: 300);
 
   // App Info
-  static const String appName = 'NameSwipe';
+  static const String appName = 'Namora';
   static const String appVersion = '1.0.0';
-  static const String appDescription = 'Swipe to find the perfect baby name';
+  static const String appDescription = 'Find the perfect baby name';
 
   // Bundled Data
   static const String bundledNamesAsset = 'assets/data/names_bundled.json';

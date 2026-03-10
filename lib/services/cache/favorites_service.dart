@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:hive/hive.dart';
-import 'package:nameswipe/models/favorite_model.dart';
+import 'package:namora/models/favorite_model.dart';
 
 class FavoritesService {
   Box<String> get _box => Hive.box<String>('favorites');
@@ -23,6 +23,10 @@ class FavoritesService {
     return _box.values.map((jsonStr) {
       return FavoriteModel.fromJson(jsonDecode(jsonStr) as Map<String, dynamic>);
     }).toList();
+  }
+
+  Future<void> clearAll() async {
+    await _box.clear();
   }
 
   int get count => _box.length;

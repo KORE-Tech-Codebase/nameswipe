@@ -1,4 +1,4 @@
-package com.example.nameswipe
+package com.namora.rkx
 
 import io.flutter.embedding.android.FlutterActivity
 
