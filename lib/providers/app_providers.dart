@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nameswipe/services/cache/cache_keys.dart';
 import 'package:nameswipe/services/cache/cache_service.dart';
-import 'package:nameswipe/services/cache/database_service.dart';
+import 'package:nameswipe/services/cache/favorites_service.dart';
 import 'package:nameswipe/services/network/dio_client.dart';
 import 'package:nameswipe/services/network/api_service.dart';
 
@@ -12,13 +12,16 @@ final apiServiceProvider = Provider<NamesApiService>((ref) {
   return NamesApiService(dioClient: ref.watch(dioClientProvider));
 });
 
-final databaseServiceProvider = Provider<DatabaseService>((ref) {
-  return DatabaseService.instance;
-});
-
 final cacheServiceProvider = Provider<CacheService>((ref) {
   return CacheService.instance;
 });
+
+final favoritesServiceProvider = Provider<FavoritesService>((ref) {
+  return FavoritesService();
+});
+
+// Cross-screen favorites refresh trigger
+final favoritesRefreshProvider = StateProvider<int>((ref) => 0);
 
 // Theme Provider
 final themeProvider = StateNotifierProvider<ThemeNotifier, bool>((ref) {

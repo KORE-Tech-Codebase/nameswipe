@@ -4,7 +4,7 @@ import 'package:nameswipe/features/favorites/repository/favorites_repository.dar
 import 'package:nameswipe/providers/app_providers.dart';
 
 final favoritesRepositoryProvider = Provider<FavoritesRepository>((ref) {
-  return FavoritesRepository(db: ref.watch(databaseServiceProvider));
+  return FavoritesRepository(favoritesService: ref.watch(favoritesServiceProvider));
 });
 
 enum FavSortOrder { newest, oldest, az, za }
@@ -14,6 +14,8 @@ final favGenderFilterProvider = StateProvider<String?>((ref) => null);
 
 final favoritesViewModelProvider =
     StateNotifierProvider<FavoritesViewModel, FavoritesState>((ref) {
+  // Listen to refresh trigger from swipe screen
+  ref.watch(favoritesRefreshProvider);
   return FavoritesViewModel(ref.watch(favoritesRepositoryProvider), ref);
 });
 
@@ -39,23 +41,23 @@ class FavoritesViewModel extends StateNotifier<FavoritesState> {
   final FavoritesRepository _repository;
   final Ref _ref;
 
-  Future<void> loadFavorites() async {
+  void loadFavorites() {
     state = state.copyWith(isLoading: true);
     try {
       final gender = _ref.read(favGenderFilterProvider);
       final sort = _ref.read(favSortProvider);
-      String orderBy;
+      String sortBy;
       switch (sort) {
         case FavSortOrder.newest:
-          orderBy = 'favorited_at DESC';
+          sortBy = 'newest';
         case FavSortOrder.oldest:
-          orderBy = 'favorited_at ASC';
+          sortBy = 'oldest';
         case FavSortOrder.az:
-          orderBy = 'name COLLATE NOCASE ASC';
+          sortBy = 'az';
         case FavSortOrder.za:
-          orderBy = 'name COLLATE NOCASE DESC';
+          sortBy = 'za';
       }
-      final favs = await _repository.getFavorites(gender: gender, orderBy: orderBy);
+      final favs = _repository.getFavorites(gender: gender, sortBy: sortBy);
       state = state.copyWith(favorites: favs, isLoading: false);
     } catch (_) {
       state = state.copyWith(isLoading: false);

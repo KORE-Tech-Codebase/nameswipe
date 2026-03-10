@@ -3,19 +3,13 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:nameswipe/services/cache/cache_service.dart';
-import 'package:nameswipe/services/cache/database_service.dart';
 import 'package:nameswipe/utils/logger/app_logger.dart';
-import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
-import 'package:sqflite/sqflite.dart';
 
 abstract final class Bootstrap {
   static Future<void> init() async {
     WidgetsFlutterBinding.ensureInitialized();
-
-    if (kIsWeb) {
-      databaseFactory = databaseFactoryFfiWeb;
-    }
 
     if (!kIsWeb) {
       await SystemChrome.setPreferredOrientations([
@@ -37,11 +31,11 @@ abstract final class Bootstrap {
 
     await Future.wait([
       CacheService.init(),
-      DatabaseService.init(),
+      Hive.initFlutter(),
     ]);
 
-    // TODO: Uncomment when ready to enable ads
-    // await MobileAds.instance.initialize();
+    // Open favorites box
+    await Hive.openBox<String>('favorites');
 
     AppLogger.info('Bootstrap complete', tag: 'Bootstrap');
   }

@@ -10,13 +10,10 @@ abstract final class AppConstants {
   static const int defaultPageSize = 100;
   static const int defaultFirstPage = 1;
 
-  // Sync
-  static const int syncBatchSize = 100;
-  static const Duration syncDelay = Duration(milliseconds: 500);
-
   // Swipe
   static const int swipeBatchSize = 20;
   static const int swipePreloadThreshold = 5;
+  static const int swipeCategoriesPerFetch = 4;
 
   // Search
   static const Duration searchDebounceDelay = Duration(milliseconds: 300);
@@ -26,10 +23,8 @@ abstract final class AppConstants {
   static const String appVersion = '1.0.0';
   static const String appDescription = 'Swipe to find the perfect baby name';
 
-  // Database
-  static const String dbName = 'nameswipe.db';
-  static const int dbVersion = 1;
-  static const String starterDbAsset = 'assets/db/starter_names.db';
+  // Bundled Data
+  static const String bundledNamesAsset = 'assets/data/names_bundled.json';
 
   // Categories
   static const List<String> categories = [

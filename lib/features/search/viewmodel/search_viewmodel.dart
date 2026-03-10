@@ -6,7 +6,7 @@ import 'package:nameswipe/features/search/repository/search_repository.dart';
 import 'package:nameswipe/providers/app_providers.dart';
 
 final searchRepositoryProvider = Provider<SearchRepository>((ref) {
-  return SearchRepository(db: ref.watch(databaseServiceProvider));
+  return SearchRepository(api: ref.watch(apiServiceProvider));
 });
 
 final searchFilterProvider = StateProvider<FilterModel>((ref) {
@@ -74,7 +74,6 @@ class SearchViewModel extends StateNotifier<SearchState> {
         query: query,
         gender: filter.gender,
         categories: filter.categories.isNotEmpty ? filter.categories.toList() : null,
-        origins: filter.origins.isNotEmpty ? filter.origins.toList() : null,
       );
       state = state.copyWith(results: results, isLoading: false, hasSearched: true);
     } catch (_) {

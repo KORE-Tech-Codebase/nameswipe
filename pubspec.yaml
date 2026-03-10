@@ -22,10 +22,8 @@ dependencies:
   connectivity_plus: ^6.1.1
 
   # Local Storage
-  sqflite: ^2.4.1
-  sqflite_common_ffi_web: ^0.4.5+2
-  path_provider: ^2.1.5
-  path: ^1.9.1
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
   shared_preferences: ^2.3.4
 
   # UI
@@ -70,6 +68,7 @@ flutter:
 
   assets:
     - assets/svg/
+    - assets/data/
 
   fonts:
     - family: Nunito

@@ -4,28 +4,15 @@ import 'package:go_router/go_router.dart';
 import 'package:nameswipe/core/constants/colors.dart';
 import 'package:nameswipe/core/routing/route_names.dart';
 import 'package:nameswipe/features/settings/viewmodel/settings_viewmodel.dart';
-import 'package:nameswipe/features/sync/viewmodel/sync_viewmodel.dart';
 import 'package:nameswipe/providers/app_providers.dart';
 
-class SettingsScreen extends ConsumerStatefulWidget {
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
-  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
-}
-
-class _SettingsScreenState extends ConsumerState<SettingsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(() => ref.read(settingsViewModelProvider.notifier).loadStats());
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsViewModelProvider);
     final isDarkMode = ref.watch(themeProvider);
-    final syncState = ref.watch(syncViewModelProvider);
 
     return SafeArea(
       child: ListView(
@@ -47,42 +34,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           // DATA
           _SectionHeader('DATA'),
           ListTile(
-            leading: Icon(Icons.storage_rounded, color: Theme.of(context).colorScheme.primary),
-            title: const Text('Database Status'),
-            subtitle: Text('${settings.totalNames} names available'),
-            trailing: const Icon(Icons.check_circle, color: AppColors.success, size: 20),
-          ),
-          ListTile(
-            leading: Icon(Icons.swipe_rounded, color: Theme.of(context).colorScheme.primary),
-            title: const Text('Swipe History'),
-            subtitle: Text('${settings.swipeCount} names swiped'),
-          ),
-          ListTile(
             leading: Icon(Icons.favorite_rounded, color: Theme.of(context).colorScheme.primary),
             title: const Text('Favorites'),
             subtitle: Text('${settings.favoritesCount} names saved'),
-          ),
-          ListTile(
-            leading: Icon(Icons.cloud_sync_rounded, color: Theme.of(context).colorScheme.primary),
-            title: const Text('Sync Status'),
-            subtitle: Text(syncState.isSyncing ? 'Syncing...' : syncState.isComplete ? 'All data synced' : '${syncState.completedCategories}/${syncState.totalCategories} categories'),
-            trailing: syncState.isSyncing
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                : IconButton(
-                    icon: const Icon(Icons.sync_rounded),
-                    onPressed: () => ref.read(syncViewModelProvider.notifier).startSync(),
-                  ),
-          ),
-          const Divider(),
-
-          // ACTIONS
-          _SectionHeader('ACTIONS'),
-          ListTile(
-            leading: Icon(Icons.refresh_rounded, color: Theme.of(context).colorScheme.primary),
-            title: const Text('Clear Swipe History'),
-            subtitle: const Text('Start swiping from scratch'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => _confirmClearHistory(context),
           ),
           const Divider(),
 
@@ -106,26 +60,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             subtitle: const Text('Version 1.0.0'),
           ),
           const SizedBox(height: 32),
-        ],
-      ),
-    );
-  }
-
-  void _confirmClearHistory(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Clear Swipe History?'),
-        content: const Text('This will let you re-swipe all names. Your favorites will be kept.'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () {
-              ref.read(settingsViewModelProvider.notifier).clearSwipeHistory();
-              Navigator.pop(context);
-            },
-            child: const Text('Clear'),
-          ),
         ],
       ),
     );

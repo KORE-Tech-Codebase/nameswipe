@@ -1,11 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nameswipe/models/name_model.dart';
+import 'package:nameswipe/models/favorite_model.dart';
 import 'package:nameswipe/models/filter_model.dart';
 import 'package:nameswipe/features/swipe/repository/swipe_repository.dart';
 import 'package:nameswipe/providers/app_providers.dart';
 
 final swipeRepositoryProvider = Provider<SwipeRepository>((ref) {
-  return SwipeRepository(db: ref.watch(databaseServiceProvider));
+  return SwipeRepository(api: ref.watch(apiServiceProvider));
 });
 
 final swipeFilterProvider = StateProvider<FilterModel>((ref) {
@@ -14,7 +15,11 @@ final swipeFilterProvider = StateProvider<FilterModel>((ref) {
 
 final swipeViewModelProvider =
     StateNotifierProvider<SwipeViewModel, SwipeState>((ref) {
-  return SwipeViewModel(ref.watch(swipeRepositoryProvider), ref);
+  return SwipeViewModel(
+    ref.watch(swipeRepositoryProvider),
+    ref.watch(favoritesServiceProvider),
+    ref,
+  );
 });
 
 class SwipeState {
@@ -42,11 +47,13 @@ class SwipeState {
 }
 
 class SwipeViewModel extends StateNotifier<SwipeState> {
-  SwipeViewModel(this._repository, this._ref) : super(const SwipeState()) {
+  SwipeViewModel(this._repository, this._favoritesService, this._ref)
+      : super(const SwipeState()) {
     loadNames();
   }
 
   final SwipeRepository _repository;
+  final dynamic _favoritesService;
   final Ref _ref;
 
   Future<void> loadNames() async {
@@ -64,7 +71,23 @@ class SwipeViewModel extends StateNotifier<SwipeState> {
   Future<void> onSwipe(int index, bool isFavorite) async {
     if (index >= state.names.length) return;
     final name = state.names[index];
-    await _repository.recordSwipe(name, isFavorite);
+
+    // Mark as seen in session
+    _repository.markSeen(name);
+
+    // Save to Hive if favorited
+    if (isFavorite) {
+      _favoritesService.addFavorite(FavoriteModel(
+        name: name.name,
+        gender: name.gender,
+        origin: name.origin,
+        meaning: name.meaning,
+        category: name.category,
+        favoritedAt: DateTime.now(),
+      ));
+      // Trigger favorites refresh
+      _ref.read(favoritesRefreshProvider.notifier).state++;
+    }
 
     final remaining = List<NameModel>.from(state.names)..removeAt(index);
     state = state.copyWith(names: remaining);
@@ -87,6 +110,11 @@ class SwipeViewModel extends StateNotifier<SwipeState> {
 
   void applyFilter(FilterModel filter) {
     _ref.read(swipeFilterProvider.notifier).state = filter;
+    loadNames();
+  }
+
+  void resetSession() {
+    _repository.clearSeen();
     loadNames();
   }
 }

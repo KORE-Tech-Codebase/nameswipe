@@ -60,6 +60,7 @@ abstract final class AppTheme {
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: AppColors.primary,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         textStyle: AppTypography.labelLarge,
       ),
     ),
@@ -110,6 +111,25 @@ abstract final class AppTheme {
       backgroundColor: AppColors.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+    ),
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: AppColors.onSurface,
+      contentTextStyle: const TextStyle(
+        fontFamily: AppTypography.fontFamily,
+        color: Colors.white,
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    ),
+    dialogTheme: DialogThemeData(
+      backgroundColor: AppColors.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      titleTextStyle: const TextStyle(
+        fontFamily: AppTypography.fontFamily,
+        fontSize: AppTypography.fontSizeHeading,
+        fontWeight: FontWeight.w700,
+        color: AppColors.onSurface,
       ),
     ),
   );
@@ -171,6 +191,7 @@ abstract final class AppTheme {
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: AppColors.primaryDark,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         textStyle: AppTypography.labelLarge,
       ),
     ),
@@ -221,6 +242,25 @@ abstract final class AppTheme {
       backgroundColor: AppColors.surfaceDark,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+    ),
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: AppColors.onSurfaceDark,
+      contentTextStyle: const TextStyle(
+        fontFamily: AppTypography.fontFamily,
+        color: Colors.black,
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    ),
+    dialogTheme: DialogThemeData(
+      backgroundColor: AppColors.surfaceDark,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      titleTextStyle: const TextStyle(
+        fontFamily: AppTypography.fontFamily,
+        fontSize: AppTypography.fontSizeHeading,
+        fontWeight: FontWeight.w700,
+        color: AppColors.onSurfaceDark,
       ),
     ),
   );
