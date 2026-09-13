@@ -69,13 +69,28 @@ dev_dependencies:
   flutter_native_splash: ^2.4.3
   flutter_launcher_icons: ^0.14.3
 
-# Launcher Icons Configuration
+# Flutter Native Splash config
+flutter_native_splash:
+  color: "#ff5953"
+  image: assets/icon/app_icon_padded.png
+  android: true
+  ios: false
+  android_gravity: center
+  fullscreen: true
+
+  android_12:
+    color: "#ff5953"
+    icon_background_color: "#ff5953"
+
+
+# Flutter Launcher Icons config
 flutter_launcher_icons:
   android: true
   ios: false
   image_path: "assets/icon/app_icon.png"
-  adaptive_icon_background: "#FF6B35"
-  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
+  adaptive_icon_background: "#ff5953"
+  adaptive_icon_foreground: "assets/icon/app_icon.png"
+
 
 flutter:
   uses-material-design: true
